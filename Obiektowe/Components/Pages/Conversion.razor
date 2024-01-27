@@ -1,0 +1,161 @@
+﻿@page "/Conversion"
+@rendermode InteractiveServer
+
+<h3>Konwerter Liczb</h3>
+
+<div>
+    <label for="dec">Wprowadź liczbę DEC:</label>
+    <input type="text" id="dec" @bind="liczbaDec" />
+</div>
+
+<div>
+    <label for="bin">Wprowadź liczbę BIN:</label>
+    <input type="text" id="bin" @bind="liczbaBin" />
+</div>
+
+<div>
+    <label for="oct">Wprowadź liczbę OCT:</label>
+    <input type="text" id="oct" @bind="liczbaOct" />
+</div>
+
+<div>
+    <label for="hex">Wprowadź liczbę HEX:</label>
+    <input type="text" id="hex" @bind="liczbaHex" />
+</div>
+
+<div>
+    <label for="wyniki">Wyniki konwersji:</label>
+    <ul>
+        <li>Liczba DEC: @wyniki.LiczbaDec</li>
+        <li>Liczba BIN: @wyniki.LiczbaBin</li>
+        <li>Liczba OCT: @wyniki.LiczbaOct</li>
+        <li>Liczba HEX: @wyniki.LiczbaHex</li>
+    </ul>
+</div>
+
+@if (!string.IsNullOrEmpty(blad))
+{
+    <div style="color: red;">Błąd: @blad</div>
+}
+
+<button class="btn btn-primary" @onclick="Konwertuj">Konwertuj</button>
+
+@code {
+    private string liczbaDec;
+    private string liczbaBin;
+    private string liczbaOct;
+    private string liczbaHex;
+    private string blad;
+
+    //Klasa przechowująca wyniki konwersji
+    private class WynikiKonwersji
+    {
+        public int LiczbaDec { get; set; }
+        public string LiczbaBin { get; set; }
+        public string LiczbaOct { get; set; }
+        public string LiczbaHex { get; set; }
+    }
+
+    private WynikiKonwersji wyniki = new WynikiKonwersji();//Obiekt przechowujący wyniki konwersji
+
+    //Metoda do obsługi przycisku konwersji
+    private void Konwertuj()
+    {
+        blad = null;
+
+        //Sprawdzenie, czy pole DEC nie jest puste
+        if (!string.IsNullOrEmpty(liczbaDec))
+        {
+            if (int.TryParse(liczbaDec, out int dec))//Sprawdzenie czy wprowadzona wartość DEC jest poprawna
+            {
+                //Konwersja
+                wyniki.LiczbaDec = dec;
+                wyniki.LiczbaBin = Convert.ToString(dec, 2);
+                wyniki.LiczbaOct = Convert.ToString(dec, 8);
+                wyniki.LiczbaHex = Convert.ToString(dec, 16).ToUpper();
+
+                WyczyscPola();
+            }
+            else
+            {
+                blad = "Błędne dane wejściowe.";
+            }
+        }
+        //Sprawdzenie, czy pole BIN nie jest puste
+        else if (!string.IsNullOrEmpty(liczbaBin))
+        {
+            if (IsValidBinary(liczbaBin))//Sprawdzenie czy wprowadzona wartość BIN jest poprawna
+            {
+                //Konwersja
+                wyniki.LiczbaDec = Convert.ToInt32(liczbaBin, 2);
+                wyniki.LiczbaBin = liczbaBin;
+                wyniki.LiczbaOct = Convert.ToString(wyniki.LiczbaDec, 8);
+                wyniki.LiczbaHex = Convert.ToString(wyniki.LiczbaDec, 16).ToUpper();
+                WyczyscPola();
+            }
+            else
+            {
+                blad = "Błędne dane wejściowe.";
+            }
+        }
+        //Sprawdzenie, czy pole OCT nie jest puste
+        else if (!string.IsNullOrEmpty(liczbaOct))
+        {
+            if (IsValidOctal(liczbaOct))//Sprawdzenie czy wprowadzona wartość OCT jest poprawna
+            {
+                //Konwersja
+                wyniki.LiczbaDec = Convert.ToInt32(liczbaOct, 8);
+                wyniki.LiczbaBin = Convert.ToString(wyniki.LiczbaDec, 2);
+                wyniki.LiczbaOct = liczbaOct;
+                wyniki.LiczbaHex = Convert.ToString(wyniki.LiczbaDec, 16).ToUpper();
+                WyczyscPola();
+            }
+            else
+            {
+                blad = "Błędne dane wejściowe.";
+            }
+        }
+        //Sprawdzenie, czy pole HEX nie jest puste
+        else if (!string.IsNullOrEmpty(liczbaHex))
+        {
+            if (IsValidHex(liczbaHex))//Sprawdzenie czy wprowadzona wartość HEX jest poprawna
+            {
+                //Konwersja
+                wyniki.LiczbaDec = Convert.ToInt32(liczbaHex, 16);
+                wyniki.LiczbaBin = Convert.ToString(wyniki.LiczbaDec, 2);
+                wyniki.LiczbaOct = Convert.ToString(wyniki.LiczbaDec, 8);
+                wyniki.LiczbaHex = liczbaHex.ToUpper();
+                WyczyscPola();
+            }
+            else
+            {
+                blad = "Błędne dane wejściowe.";
+            }
+        }
+    }
+
+    //Dodatkowe metody sprawdzające czy podane wartości są BIN/OCT/HEX
+    private bool IsValidBinary(string value)
+    {
+        return value.All(c => c == '0' || c == '1');
+    }
+
+    private bool IsValidOctal(string value)
+    {
+        return value.All(c => char.IsDigit(c) && c >= '0' && c <= '7');
+    }
+
+    private bool IsValidHex(string value)
+    {
+        return value.All(c => char.IsDigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'));
+    }
+
+    //Czyszczenie pól formularza
+    private void WyczyscPola()
+    {
+        liczbaDec = string.Empty;
+        liczbaBin = string.Empty;
+        liczbaOct = string.Empty;
+        liczbaHex = string.Empty;
+    }
+}

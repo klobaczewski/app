@@ -1,0 +1,82 @@
+﻿@page "/Skrot"
+@rendermode InteractiveServer
+
+<h3>Hash Generator</h3>
+
+<div>
+    <label for="inputText">Enter text:</label>
+    <!-- <input type="text" id="inputText" @bind="inputText" /> -->
+    <textarea id="inputText" @bind="inputText" class="custom-textarea"></textarea>
+
+    <button @onclick="GenerateHash">Generate Hash</button>
+</div>
+
+
+@if (!string.IsNullOrWhiteSpace(md5Hash) || !string.IsNullOrWhiteSpace(sha256Hash))
+{
+    @if (!string.IsNullOrWhiteSpace(md5Hash))
+    {
+        <p>MD5 Hash: @md5Hash</p>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(sha256Hash))
+    {
+        <p>SHA-256 Hash: @sha256Hash</p>
+    }
+}
+
+<style>
+    .custom-textarea {
+        width: 100%;
+        height: 100px;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+</style>
+
+@code {
+    private string inputText;
+    private string md5Hash;
+    private string sha256Hash;
+
+    //Generowanie hashy
+    private void GenerateHash()
+    {
+        if (!string.IsNullOrWhiteSpace(inputText))
+        {
+            md5Hash = ComputeHash(inputText, System.Security.Cryptography.MD5.Create());
+            sha256Hash = ComputeHash(inputText, System.Security.Cryptography.SHA256.Create());
+        }
+    }
+
+    // Metoda generująca skrót dla tekstu
+    private string ComputeHash(string text, System.Security.Cryptography.HashAlgorithm algorithm)
+    {
+        try
+        {
+            //Konwersja na tablicę bajtów
+            var inputBytes = System.Text.Encoding.UTF8.GetBytes(text);
+
+            //Obliczenie skrótu
+            var hashBytes = algorithm.ComputeHash(inputBytes);
+
+            //Konwersja na tekst
+            var hashStringBuilder = new System.Text.StringBuilder();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                hashStringBuilder.Append(hashBytes[i].ToString("x2"));
+            }
+
+            return hashStringBuilder.ToString();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error generating hash: {ex.Message}");
+            return "Error generating hash.";
+        }
+    }
+}

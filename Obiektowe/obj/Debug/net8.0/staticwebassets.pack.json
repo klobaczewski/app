@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\PatryQ\\Desktop\\ProjektObiektowe\\Obiektowe\\Obiektowe\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Obiektowe.bundle.scp.css",
+      "PackagePath": "staticwebassets\\Obiektowe.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\PatryQ\\Desktop\\ProjektObiektowe\\Obiektowe\\Obiektowe\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\PatryQ\\Desktop\\ProjektObiektowe\\Obiektowe\\Obiektowe\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\PatryQ\\Desktop\\ProjektObiektowe\\Obiektowe\\Obiektowe\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\PatryQ\\Desktop\\ProjektObiektowe\\Obiektowe\\Obiektowe\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Obiektowe.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.Obiektowe.props",
+      "PackagePath": "build\\Obiektowe.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.Obiektowe.props",
+      "PackagePath": "buildMultiTargeting\\Obiektowe.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.Obiektowe.props",
+      "PackagePath": "buildTransitive\\Obiektowe.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

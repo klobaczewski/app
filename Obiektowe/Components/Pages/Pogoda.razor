@@ -1,0 +1,131 @@
+﻿@page "/Pogoda"
+@inject HttpClient httpClient
+@attribute [StreamRendering]
+
+<h3>Weather Data for Station 12155</h3>
+
+@if (weatherData != null && weatherData.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID Stacji</th>
+                <th>Stacja</th>
+                <th>Data pomiaru</th>
+                <th>Godzina pomiaru</th>
+                <th>Temperatura [°C]</th>
+                <th>Predkość wiatru [m/s]</th>
+                <th>Kierunek wiatru [°]</th>
+                <th>Wilgotność względna [%]</th>
+                <th>Suma opadu [mm]</th>
+                <th>Ciśnienie [hPa]</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var observation in weatherData)
+            {
+                <tr>
+                    <td>@observation.IdStacji</td>
+                    <td>@observation.Stacja</td>
+                    <td>@observation.DataPomiaru</td>
+                    <td>@observation.GodzinaPomiaru</td>
+                    <td>@observation.Temperatura</td>
+                    <td>@observation.PredkoscWiatru</td>
+                    <td>@observation.KierunekWiatru</td>
+                    <td>@observation.WilgotnoscWzgledna</td>
+                    <td>@observation.SumaOpadu</td>
+                    <td>@observation.Cisnienie</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Nie udało się pobrać danych</p>
+}
+
+@code {
+    private List<WeatherObservation> weatherData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string xmlUrl = "https://danepubliczne.imgw.pl/api/data/synop/format/xml";
+
+        try
+        {
+            //Pobranie danych z pliku
+            var xmlString = await httpClient.GetStringAsync(xmlUrl);
+
+            //Określenie stacji Gdańsk
+            weatherData = ProcessXmlData(xmlString, "12155");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Błąd: {ex.Message}");
+        }
+    }
+
+    //Przetworzenie XML na listę obiektów WeatherObservation
+    private List<WeatherObservation> ProcessXmlData(string xmlString, string nodeStationId)
+    {
+        try
+        {
+            //XmlDocument do parsowania danych XML
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(xmlString);
+
+            var observations = new List<WeatherObservation>();
+
+            //Wybór określonej stacji pogodowej
+            var stationNodes = xmlDoc.SelectNodes($"//item[id_stacji='{nodeStationId}']");
+
+            if (stationNodes != null)
+            {
+                foreach (System.Xml.XmlNode stationNode in stationNodes)
+                {
+                    //Tworzenie biektu na podstawie danych ze stacji pogodowej dla konkretnego węzła
+                    var observation = new WeatherObservation
+                        {
+                            IdStacji = stationNode.SelectSingleNode("id_stacji")?.InnerText,
+                            Stacja = stationNode.SelectSingleNode("stacja")?.InnerText,
+                            DataPomiaru = stationNode.SelectSingleNode("data_pomiaru")?.InnerText,
+                            GodzinaPomiaru = stationNode.SelectSingleNode("godzina_pomiaru")?.InnerText,
+                            Temperatura = stationNode.SelectSingleNode("temperatura")?.InnerText,
+                            PredkoscWiatru = stationNode.SelectSingleNode("predkosc_wiatru")?.InnerText,
+                            KierunekWiatru = stationNode.SelectSingleNode("kierunek_wiatru")?.InnerText,
+                            WilgotnoscWzgledna = stationNode.SelectSingleNode("wilgotnosc_wzgledna")?.InnerText,
+                            SumaOpadu = stationNode.SelectSingleNode("suma_opadu")?.InnerText,
+                            Cisnienie = stationNode.SelectSingleNode("cisnienie")?.InnerText,
+                        };
+
+                    //Dodanie obiektu z danymi do listy
+                    observations.Add(observation);
+                }
+            }
+
+            return observations;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Błąd XML: {ex.Message}");
+            return new List<WeatherObservation>();
+        }
+    }
+
+    //Definicja klasy pojedynczej obserwacji pogodowej
+    public class WeatherObservation
+    {
+        public string IdStacji { get; set; }
+        public string Stacja { get; set; }
+        public string DataPomiaru { get; set; }
+        public string GodzinaPomiaru { get; set; }
+        public string Temperatura { get; set; }
+        public string PredkoscWiatru { get; set; }
+        public string KierunekWiatru { get; set; }
+        public string WilgotnoscWzgledna { get; set; }
+        public string SumaOpadu { get; set; }
+        public string Cisnienie { get; set; }
+    }
+}

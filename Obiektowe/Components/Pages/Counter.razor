@@ -1,0 +1,67 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+
+<h1>
+    Sprawdź się :)
+</h1>
+
+<!-- Wyświetlanie liczby kliknięć -->
+<p role="status">Current count: @clickCounter.CurrentCount</p>
+
+<!-- Wyświetlanie szybkości klikania -->
+<p role="status">Click per sec: @clickCounter.ClickSpeed clicks per second</p>
+
+<!-- Wyświetlanie rekordowej szybkości klikania -->
+<p role="status">Rekord:): @clickCounter.RecordSpeed clicks per second</p>
+
+<button class="btn btn-primary" @onclick=clickCounter.IncrementCount>Click me</button>
+
+
+
+
+
+@code {
+    private ClickCounter clickCounter = new ClickCounter();
+
+    public class ClickCounter
+    {
+        private int currentCount = 0;
+        private DateTime lastClickTime = DateTime.Now;
+        private int clickSpeed = 0;
+        private int recordSpeed = 0;
+
+        //Aktualna liczba kliknięć
+        public int CurrentCount => currentCount;
+
+        //Aktualna szybkość klikania
+        public int ClickSpeed => clickSpeed;
+
+        //Rekordowa szybkość klikania
+        public int RecordSpeed => recordSpeed;
+
+        public void IncrementCount()
+        {
+            currentCount++;
+
+            // Obliczanie szybkości klikania
+            var currentTime = DateTime.Now;
+            var timeDifference = currentTime - lastClickTime;
+            var secondsElapsed = timeDifference.TotalSeconds;
+
+
+            if (secondsElapsed > 0)
+            {
+                clickSpeed = (int)(1 / secondsElapsed);
+
+                //Aktualizacja rekordu klkikania / sec
+                if (clickSpeed > recordSpeed)
+                {
+                    recordSpeed = clickSpeed;
+                }
+            }
+
+            lastClickTime = currentTime;
+        }
+    }
+}

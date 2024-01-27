@@ -1,0 +1,72 @@
+﻿@page "/Losowanie"
+@rendermode InteractiveServer
+
+<h3>Losowanie Rzutu Kostką</h3>
+
+<label for="iloscLosowan">Ile rzutów?</label>
+<input type="number" id="iloscLosowan" @bind="iloscLosowan" />
+<button class="btn btn-primary" @onclick="Losuj">Rzuć!</button>
+
+@if (wynikiLosowan != null && wynikiLosowan.Any())
+{
+    <p>Suma wszystkich rzutów: @SumaRzutow()</p>
+    <div class="wyniki-container">
+        @foreach (var wynik in wynikiLosowan)
+        {
+            <div class="wynik">
+                <img src="@wynik.SciezkaDoObrazka" />
+                <p>Rzut kostką: @wynik.Liczba</p>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .wyniki-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .wynik {
+        margin: 10px;
+    }
+</style>
+
+@code {
+    private List<RzutKostka> wynikiLosowan;
+    private Random random = new Random();
+    private int iloscLosowan = 1;
+
+    //Losowania i ddawanie wyników do Listy
+    private void Losuj()
+    {
+        wynikiLosowan = Enumerable.Range(1, iloscLosowan)
+            .Select(_ => new RzutKostka(random.Next(1, 7)))
+            .ToList();
+        //StateHasChanged();//Del potem, spr.
+    }
+
+    //Suma wszystkich rzutów kostką (w przypadku gier z wieloma kośćmi)
+    private int SumaRzutow()
+    {
+        return wynikiLosowan?.Sum(w => w.Liczba) ?? 0;
+        //wynikiLosowan?.Sum(w => w.Liczba);
+    }
+
+    //
+    private class RzutKostka
+    {
+        public int Liczba { get; }//Pobranie ilości oczek do wyświetlania
+        public string SciezkaDoObrazka => $"https://www.calculator.net/img/dice{Liczba}.png";
+
+        //Spr czy liczba oczek mieści się w zakresie 1-6
+        public RzutKostka(int liczba)
+        {
+            if (liczba < 1 || liczba > 6)
+            {
+                throw new ArgumentException("Liczba musi być liczbą od 1 do 6", nameof(liczba));
+            }
+
+            Liczba = liczba;
+        }
+    }
+}
